@@ -1,9 +1,13 @@
 import { useState } from "react";
 import AddTodo from "./components/addTodo";
 import Todos from "./components/todos";
+import SearchTodo from "./components/searchTodo";
 
 function App() {
     let initTodo;
+    const [searchTerm, setSearchTerm] = useState("");
+    const [status, setStatus] = useState(false);
+
     if (localStorage.getItem("todos") === null) {
         initTodo = [];
     } else {
@@ -35,8 +39,36 @@ function App() {
         console.log(myTodo);
     };
 
+    const filteredTodos = todos.filter((todo) =>
+        todo.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     return (
         <div className="container">
+            <div className="flex justify-between items-center p-4 bg-gray-800 text-white">
+                <h1 className="text-2xl font-bold">Todo App</h1>
+                <div className="flex items-center space-x-2">
+    <div className="relative w-full">
+        <input
+            type="text"
+            placeholder="Search Todos by Title..."
+            onChange={(e) => setSearchTerm(e.target.value)}
+            value={searchTerm}
+            className="w-full p-3 pl-10 rounded-l-md border border-gray-300 text-black focus:outline-none focus:ring-2 focus:ring-blue-400"
+        />
+    </div>
+    <button
+        onClick={() => setStatus(!status)}
+        className="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-r-md px-4 py-2"
+    >
+        SEARCH
+    </button>
+</div>
+
+            </div>
+            {status && filteredTodos.length > 0 && (
+                <SearchTodo todos={filteredTodos} onDelete={onDelete}/>
+            )}
             <AddTodo addTodo={addTodo} />
             <Todos todos={todos} onDelete={onDelete} />
         </div>
